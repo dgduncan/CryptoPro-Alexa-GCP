@@ -7,16 +7,27 @@ import (
 	"os"
 	"time"
 
+	"github.com/dgduncan/CryptoPro-Alexa-GCP/shared"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/google/uuid"
 )
 
-type AlexaResponse struct {
+var coinbaseClient *shared.CoinbaseClient
+
+type alexaResponse struct {
 	UUID       string `json:"uid"`
 	UpdateDate string `json:"updateDate"`
 	TitleText  string `json:"titleText"`
 	MainText   string `json:"mainText"`
+}
+
+func init() {
+	client := http.DefaultClient
+	coinbaseClient = &shared.CoinbaseClient{
+		HTTP: client,
+	}
+
 }
 
 func main() {
@@ -24,20 +35,17 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, "Hello, World!")
-		// w.Write([]byte("welcome"))
-	})
-	r.Get("/test", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("welcome"))
-	})
 	r.Get("/alexa", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println(uuid.New())
-		resp := AlexaResponse{
+		rsp, err := coinbaseClient.GetSpotPrice(r.Context())
+		if err != nil {
+			fmt.Println("Crap")
+		}
+
+		resp := alexaResponse{
 			UUID:       uuid.New().String(),
-			UpdateDate: time.Now().Format(time),
+			UpdateDate: time.Now().Format(time.RFC3339),
 			TitleText:  "Test",
-			MainText:   "Test",
+			MainText:   "The price of bitcoin is " + rsp.Data.Amount,
 		}
 
 		w.Header().Set("Content-Type", "application/json")
@@ -46,25 +54,4 @@ func main() {
 
 	})
 	http.ListenAndServe(":"+port, r)
-	// http.HandleFunc("/", indexHandler)
-	// http.Handle
-
-	// port := os.Getenv("PORT")
-	// if port == "" {
-	// 	port = "8080"
-	// 	log.Printf("Defaulting to port %s", port)
-	// }
-
-	// log.Printf("Listening on port %s", port)
-	// if err := http.ListenAndServe(":"+port, nil); err != nil {
-	// 	log.Fatal(err)
-	// }
 }
-
-// func indexHandler(w http.ResponseWriter, r *http.Request) {
-// 	if r.URL.Path != "/" {
-// 		http.NotFound(w, r)
-// 		return
-// 	}
-// 	fmt.Fprint(w, "Hello, World!")
-// }
