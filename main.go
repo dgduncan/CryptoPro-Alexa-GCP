@@ -7,13 +7,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/dgduncan/CryptoPro-Alexa-GCP/shared"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/google/uuid"
 )
 
-var coinbaseClient *shared.CoinbaseClient
+var coinbaseClient CoinbaseClient
 
 type alexaResponse struct {
 	UUID       string `json:"uid"`
@@ -24,7 +23,7 @@ type alexaResponse struct {
 
 func init() {
 	client := http.DefaultClient
-	coinbaseClient = &shared.CoinbaseClient{
+	coinbaseClient = CoinbaseClient{
 		HTTP: client,
 	}
 
