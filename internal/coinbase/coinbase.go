@@ -1,4 +1,4 @@
-package main
+package coinbase
 
 import (
 	"context"
@@ -12,6 +12,11 @@ import (
 const (
 	cburl = "https://api.coinbase.com/v2/prices/spot?currency=USD"
 )
+
+// API test
+type API interface {
+	GetSpotPrice(ctx context.Context) (CoinbaseResponse, error)
+}
 
 // CoinbaseClient test
 type CoinbaseClient struct {
