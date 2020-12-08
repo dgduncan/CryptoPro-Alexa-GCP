@@ -22,6 +22,7 @@ func main() {
 	alexaHandler := &handler.AlexaHandler{
 		Client: coinbaseClient,
 	}
+	googleAssasitantHandler := &handler.GoogleAssistantHandler{}
 
 	// ***********************************
 
@@ -29,5 +30,6 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Get("/alexa", alexaHandler.Handle)
+	r.Post("/googleassistant", googleAssasitantHandler.Handle)
 	http.ListenAndServe(":"+port, r)
 }
